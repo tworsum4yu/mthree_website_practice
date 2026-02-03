@@ -1,8 +1,34 @@
 <!DOCTYPE HTML>
 <head>
-	<title>Basic ass website</title>
+	<link rel="stylesheet" href="styles.css">
+	<title>Animal Quiz</title>
 </head>
 <body>
-	<p>Basic ass paragraph</p>
-	<button>Click Me</button>
+	<h1>Animal Quiz</h1>
+	<p>Welcome to the animal quiz. Answer the questions below correctly or be square.</p>
+	<form>
+		<label>Q1: What animal is displayed below?</label>
+		<img src="AdobeStock_89903111-scaled-e1692625498842.jpeg" alt="Nonono you can't cheat this quiz">
+		<input type="text" id="Q1_ans" name="Q1_ans"><br><br>
+
+		<label>Q2: Mantis shrimp have the ability to punch at the speed of sound. True or False.</label><br>
+		<input type="radio" id="true" name="mantis_shrimp" value="TRUE">
+		<label for="true">True</label>
+ 		<input type="radio" id="false" name="mantis_shrimp" value="FALSE">
+		<label for="false">False</label><br><br>
+
+		<label>Q3: What colour is the dress?</label><br>
+		<input type="checkbox" id="Q3_1" name="Q3_1" value="W_G">
+		<label for="Q3_1">White and Gold</label><br>
+		<input type="checkbox" id="Q3_2" name="Q3_2" value="B_B">
+		<label for="Q3_2">Blue and Black</label><br>
+		<input type="checkbox" id="Q3_3" name="Q3_3" value="B_G">
+		<label for="Q3_3">Blue and Gold</label><br>
+		<input type="checkbox" id="Q3_4" name="Q3_4" value="W_B">
+		<label for="Q3_4">White and Black</label><br><br>
+
+		<label>Q4: What is my favourite colour?</label><br>
+		<input type="text" id="fav_col" name="fav_col" value=""><br><br>
+		<input type="submit" value="Submit">
+	</form>
 </body>
