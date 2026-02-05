@@ -32,7 +32,7 @@ jobs:
         run: | 
           set -e
           missing=0
-          for k in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION S3_BUCKET EC2_HOST EC2_USER EC2_SSH_KEY
+          for k in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION S3_BUCKET EC2_HOST EC2_USER EC2_SSH_KEY; do
             v="$(printenv "$k" || true)"
             if [ -z "$v" ]; then 
               echo "missing secret: $k"
