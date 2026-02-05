@@ -40,7 +40,7 @@ jobs:
             fi
           done
 
-          if (( missing == 1 )); then
+          if [ "$missing" -eq 1 ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
             echo "Secret not configured, skipping deployment"
           else
