@@ -36,7 +36,7 @@ jobs:
           for i in EC2_HOST EC2_USER EC2_SSH_KEY; do
             v="$(printenv "$i" || true)"
             if [ -z "$v" ]; then 
-              echo "missing EC2 secret: $k"
+              echo "missing EC2 secret: $i"
               EC2_missing=1
             fi
           done
