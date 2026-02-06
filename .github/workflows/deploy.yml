@@ -64,6 +64,6 @@ jobs:
             sudo mkdir -p /var/www/save_practice_site
             sudo chown -R $USER:$USER /var/www/save_practice_site
 
-            aws s3 sync src/ s3://${{ secrets.S3_BUCKET }}/site/ /var/www/save_practice_site --delete 
+            aws s3 sync s3://${{ secrets.S3_BUCKET }}/site/ /var/www/save_practice_site --delete 
             sudo systemctl reload nginx 
         
