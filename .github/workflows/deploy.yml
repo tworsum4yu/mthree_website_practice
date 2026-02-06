@@ -43,14 +43,14 @@ jobs:
 
           if [ "$S3_missing" -eq 1 ]; then
             echo "S3_ready=false" >> "$GITHUB_OUTPUT"
-            echo "Secret not configured, skipping deployment"
+            echo "Secret for S3 not configured, skipping deployment"
           else
             echo "S3_ready=true" >> "$GITHUB_OUTPUT"
           fi
 
           if [ "$EC2_missing" -eq 1 ]; then
             echo "EC2_ready=false" >> "$GITHUB_OUTPUT"
-            echo "Secret not configured, skipping deployment"
+            echo "Secret for EC2 not configured, skipping deployment"
           else
             echo "EC2_ready=true" >> "$GITHUB_OUTPUT"
           fi
