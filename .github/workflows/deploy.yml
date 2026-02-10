@@ -66,7 +66,7 @@ jobs:
       - name: upload src to S3
         if: steps.preflight.outputs.S3_ready == 'true'
         run: | 
-          aws s3 sync src/ s3://${{ secrets.S3_BUCKET }}/site/ --delete
+          aws s3 sync src/ s3://${{ secrets.S3_BUCKET }} --delete
 
       - name: deploy on EC2 (Pull from S3. Reload NGINX)
         if: steps.preflight.outputs.EC2_ready == 'true'
@@ -80,6 +80,6 @@ jobs:
             sudo mkdir -p /var/www/save_practice_site
             sudo chown -R $USER:$USER /var/www/save_practice_site
 
-            aws s3 sync s3://${{ secrets.S3_BUCKET }}/site/ /var/www/save_practice_site --delete 
+            aws s3 sync s3://${{ secrets.S3_BUCKET }} /var/www/save_practice_site --delete 
             sudo systemctl reload nginx 
         
