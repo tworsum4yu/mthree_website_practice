@@ -1,0 +1,25 @@
+{
+  "name": "mthree_website_practice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve ./src -l 8080",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "serve": "^14.2.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tworsum4yu/mthree_website_practice.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/tworsum4yu/mthree_website_practice/issues"
+  },
+  "homepage": "https://github.com/tworsum4yu/mthree_website_practice#readme"
+}
