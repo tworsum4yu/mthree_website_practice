@@ -10,8 +10,3 @@ EXPOSE 8080
 USER node
 
 CMD ["npx", "serve", "src", "-l", "8080"]
-
-# FROM nginx:alpine
-# COPY src/ /usr/share/nginx/html/
-# EXPOSE 80
-# CMD ["nginx", "-g", "daemon off;"]
