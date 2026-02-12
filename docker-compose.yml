@@ -1,0 +1,7 @@
+services:
+  animal-quiz:
+    build: .
+    container_name: animal-quiz
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

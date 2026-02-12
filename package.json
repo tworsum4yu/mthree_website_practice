@@ -7,6 +7,9 @@
     "start": "serve ./src -l 8080",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "serve": "^14.2.5"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tworsum4yu/mthree_website_practice.git"
@@ -18,8 +21,5 @@
   "bugs": {
     "url": "https://github.com/tworsum4yu/mthree_website_practice/issues"
   },
-  "homepage": "https://github.com/tworsum4yu/mthree_website_practice#readme",
-  "devDependencies": {
-    "serve": "^14.2.5"
-  }
+  "homepage": "https://github.com/tworsum4yu/mthree_website_practice#readme"
 }
