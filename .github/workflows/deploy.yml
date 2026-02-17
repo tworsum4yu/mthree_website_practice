@@ -11,6 +11,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Node setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run EsLint
+        run: | 
+          npm run format
+          npm run lint
+
       - name: configure AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
