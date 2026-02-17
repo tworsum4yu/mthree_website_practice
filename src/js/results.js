@@ -6,11 +6,11 @@ const scoreMess = document.getElementById("resultScore");
 scoreMess.textContent = "You scored " + score;
 
 if (score < 3) {
-    gif.src = "../assets/sad-spiderman.gif";
+    gif.src = "../assets/sad.gif";
 }
 else if (score == 3) {
-    gif.src = "../assets/edp-i-mean-its-all-right.gif";
+    gif.src = "../assets/edp.gif";
 }
 else {
-    gif.src = "../assets/thumbs-up-that's-rad.gif";
+    gif.src = "../assets/rad.gif";
 }

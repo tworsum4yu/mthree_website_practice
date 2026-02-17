@@ -10,6 +10,14 @@ body {
 	color: #333;
 }
 
+body.results{
+    background-color: #f5f7fa;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    padding: 100px;
+}
+
 h1 {
 	text-align: center;
 	margin-bottom: 10px;
@@ -97,4 +105,19 @@ input[type="submit"]:hover {
 input[type="submit"]:active {
 	transform: translateY(0);
 	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.gifArea {
+    background-color: white;
+    text-align: center;
+    border-radius: 12px;
+    width: 500px;
+    height: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.gifArea img { 
+    width: 100%; 
+    height: auto;
+    object-fit: cover;
 }
