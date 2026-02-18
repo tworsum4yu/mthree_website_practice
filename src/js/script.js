@@ -1,7 +1,7 @@
 // Index page
-const quiz = document.getElementById("quiz");
+const quiz = document.getElementById('quiz');
 
-if(quiz) {
+if (quiz) {
   quiz.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -38,15 +38,14 @@ const score = Number(localStorage.getItem('score'));
 const gif = document.getElementById('resultGif');
 const scoreMess = document.getElementById('resultScore');
 
-if(gif && scoreMess) {
+if (gif && scoreMess) {
   scoreMess.textContent = 'You scored ' + score;
 
   if (score < 3) {
-    gif.src = "/assets/sad.gif";
+    gif.src = '/assets/sad.gif';
   } else if (score == 3) {
     gif.src = '/assets/edp.gif';
   } else {
     gif.src = '/assets/rad.gif';
   }
 }
-
