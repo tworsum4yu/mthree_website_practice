@@ -37,6 +37,31 @@ jobs:
         run: |
           aws s3 sync src/ s3://${{ secrets.S3_BUCKET }}/ --delete
 
+      # ECR: login + build + push (SHA + latest)
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image to ECR
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+          IMAGE_SHA="${REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
+          IMAGE_LATEST="${REGISTRY}/${ECR_REPOSITORY}:latest"
+
+          docker build -t "${IMAGE_SHA}" -t "${IMAGE_LATEST}" .
+          docker push "${IMAGE_SHA}"
+          docker push "${IMAGE_LATEST}"
+
+      - name: upload src to S3
+        run: |
+          aws s3 sync src/ s3://${{ secrets.S3_BUCKET }}/ --delete
+
       # EC2 preflight (check if EC2 secrets are available, skip otherwise)
       - name: EC2 preflight check
         id: preflight
