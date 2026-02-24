@@ -45,9 +45,9 @@ jobs:
 
       - name: Build, Tag and Push Docker Image
         run: |
-          IMAGE = ${{ ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ ECR_REPOSITORY_NAME }}
+          IMAGE = ${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}
           docker compose up --build
-          docker tag ${{ ECR_REPOSITORY_NAME }}:latest $IMAGE
+          docker tag ${{ secrets.ECR_REPOSITORY_NAME }}:latest $IMAGE
           docker push $IMAGE
 
       # EC2 preflight (check if EC2 secrets are available, skip otherwise)
