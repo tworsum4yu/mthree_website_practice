@@ -46,7 +46,7 @@ jobs:
       - name: Build, Tag and Push Docker Image
         run: |
           IMAGE=${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}
-          docker compose up --build
+          docker compose build
           docker tag ${{ secrets.ECR_REPOSITORY_NAME }}:latest $IMAGE
           docker push $IMAGE
 
