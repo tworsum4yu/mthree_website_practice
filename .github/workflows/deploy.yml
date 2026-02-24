@@ -45,8 +45,12 @@ jobs:
 
       - name: Build, Tag and Push Docker Image
         run: |
-          IMAGE=${{ secrets.ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}
-          docker compose build
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          IMAGE=$ACCOUNT_ID.dkr.ecr.eu-west-2.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}
+
+          aws ecr describe-repositories --repository-names "$REPO_NAME" || aws ecr create-repository --repository-name "$REPO_NAME"
+
+          docker build -t ${{ secrets.ECR_REPOSITORY_NAME }}
           docker tag ${{ secrets.ECR_REPOSITORY_NAME }}:latest $IMAGE
           docker push $IMAGE
 
