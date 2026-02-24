@@ -11,6 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      ### Prettier and ESlint checks ###
       - name: Node setup
         uses: actions/setup-node@v4
         with:
@@ -33,9 +34,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      ### Upload to S3 ###
       - name: upload src to S3
         run: |
           aws s3 sync src/ s3://${{ secrets.S3_BUCKET }}/ --delete
+      
+      #### Push Docker Image to ECR ####
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2 
+
+      - name: Build, Tag and Push Docker Image
+        run: |
+          IMAGE = ${{ ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ ECR_REPOSITORY_NAME }}
+          docker compose up --build
+          docker tag ${{ ECR_REPOSITORY_NAME }}:latest $IMAGE
+          docker push $IMAGE
 
       # EC2 preflight (check if EC2 secrets are available, skip otherwise)
       - name: EC2 preflight check
@@ -62,6 +75,7 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
+      ### Deploy to EC2 ###
       - name: deploy on EC2 (pull from S3, reload NGINX)
         if: steps.preflight.outputs.ready == 'true'
         uses: appleboy/ssh-action@v1.0.3
