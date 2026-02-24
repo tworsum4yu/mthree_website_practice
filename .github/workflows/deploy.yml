@@ -50,7 +50,7 @@ jobs:
 
           aws ecr describe-repositories --repository-names ${{ secrets.ECR_REPOSITORY_NAME }} || aws ecr create-repository --repository-name ${{ secrets.ECR_REPOSITORY_NAME }}
 
-          docker build -t ${{ secrets.ECR_REPOSITORY_NAME }}
+          docker build -t ${{ secrets.ECR_REPOSITORY_NAME }}:latest .
           docker tag ${{ secrets.ECR_REPOSITORY_NAME }}:latest $IMAGE
           docker push $IMAGE
 
