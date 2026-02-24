@@ -38,10 +38,10 @@ jobs:
       - name: upload src to S3
         run: |
           aws s3 sync src/ s3://${{ secrets.S3_BUCKET }}/ --delete
-      
+
       #### Push Docker Image to ECR ####
       - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v2 
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, Tag and Push Docker Image
         run: |
