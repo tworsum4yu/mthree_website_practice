@@ -1,24 +1,34 @@
-#!/bin/bash
+# terraform fills in:
+#   ${aws_region}, ${ecr_registry}, ${ecr_image}, ${host_port}, ${container_port}
+set -euxo pipefail
+
 yum update -y
 
-# Install Docker
+# install Docker on Amazon Linux 2
 amazon-linux-extras install docker -y
-yum install docker -y
 
-# Start Docker
-systemctl start docker
+# install AWS CLI (often present already; ok to reinstall for demo)
+yum install -y awscli
+
+# start Docker
 systemctl enable docker
-usermod -a -G docker ec2-user
+systemctl start docker
 
-# Install AWS CLI v2 (if not present)
-yum install -y aws-cli
+# adding ec2-user to docker group is useful for interactive SSH later and it doesn't affect this script run (still running as root)
+usermod -aG docker ec2-user || true
 
-# Login to ECR
-aws ecr get-login-password --region ${aws_region} \
-| docker login --username AWS --password-stdin ${ecr_repo_url}
+# login to ECR (registry host, not repo:tag)
+aws ecr get-login-password --region "${aws_region}" \
+  | docker login --username AWS --password-stdin "${ecr_registry}"
 
-# Pull image
-docker pull ${ecr_repo_url}
+# pull exact image reference (repo + tag)
+docker pull "${ecr_image}"
 
-# Run container
-docker run -d -p ${app_port}:${app_port} ${ecr_repo_url}
+# replace any existing container and run with restart policy
+docker rm -f animal-quiz || true
+
+docker run -d \
+  --name animal-quiz \
+  --restart unless-stopped \
+  -p "${host_port}:${container_port}" \
+  "${ecr_image}"
