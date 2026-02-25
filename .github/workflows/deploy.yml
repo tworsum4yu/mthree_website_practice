@@ -50,7 +50,7 @@ jobs:
       - name: Build, Tag and Push Docker Image
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          REPO: ${{ secrets.ECR_REPOSITORY_NAME }}  // if we have that
+          REPO: ${{ secrets.ECR_REPOSITORY_NAME }}
           SHA: ${{ github.sha }}
         run: |
           set -euo pipefail  
