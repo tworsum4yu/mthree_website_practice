@@ -44,10 +44,10 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, Tag and Push Docker Image
-        env:  
-          AWS_REGION: ${{ secrets.AWS_REGION }}  
-          REPO: ${{ secrets.ECR_REPOSITORY_NAME }}  // if we have that  
-          SHA: ${{ github.sha }}  
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          REPO: ${{ secrets.ECR_REPOSITORY_NAME }}  // if we have that
+          SHA: ${{ github.sha }}
         run: |
           set -euo pipefail  
 
