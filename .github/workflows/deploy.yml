@@ -8,6 +8,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      host: ${{ secrets.EC2_HOST }}
+      username: ${{ secrets.EC2_USER }}
+      key: ${{ secrets.EC2_SSH_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -63,10 +67,6 @@ jobs:
       # EC2 preflight (check if EC2 secrets are available, skip otherwise)
       - name: EC2 preflight check
         id: preflight
-        env:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
         run: |
           set -e
           missing=0
