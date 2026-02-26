@@ -65,7 +65,7 @@ jobs:
 
           docker build -t "${IMAGE_SHA}" -t "${IMAGE_LATEST}" .  
           docker push "${IMAGE_SHA}"  
-          docker push "${IMAGE_LATEST}" 
+          docker push "${IMAGE_LATEST}"
 
       # EC2 preflight (check if EC2 secrets are available, skip otherwise)
       - name: EC2 preflight check
