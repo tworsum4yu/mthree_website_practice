@@ -9,11 +9,6 @@ variable "aws_region" {
   type        = string
 }
 
-variable "aws_account_id" {
-  description = "AWS account ID that owns the ECR registry (e.g., 108174090253)"
-  type        = string
-}
-
 variable "ecr_repository" {
   description = "ECR repository name (not the full URL). Example: mthree-peregrine"
   type        = string

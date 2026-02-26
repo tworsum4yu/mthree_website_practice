@@ -27,6 +27,8 @@ data "aws_subnets" "default" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
 # security group: allow inbound SSH and app port
 resource "aws_security_group" "app_sg" {
   name        = "${var.name_prefix}-sg"
@@ -97,7 +99,7 @@ data "aws_iam_policy_document" "ecr_pull" {
     ]
     resources = [
       # scope to the specific repository if you can
-      "arn:aws:ecr:${var.aws_region}:${var.aws_account_id}:repository/${var.ecr_repository}"
+      "arn:aws:ecr:${var.aws_region}:${data.aws_caller_identity.current.account_id}:repository/${var.ecr_repository}"
     ]
   }
 }
@@ -124,13 +126,13 @@ data "aws_ami" "al2" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    values = ["amzn2-ami-hvm-*-x86_64-gp*"]
   }
 }
 
 # locals: build ECR registry and image reference
 locals {
-  ecr_registry = "${var.aws_account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
+  ecr_registry = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
   ecr_image    = "${local.ecr_registry}/${var.ecr_repository}:${var.image_tag}"
 }
 
@@ -140,6 +142,7 @@ resource "aws_instance" "docker_server" {
   instance_type          = var.instance_type
   subnet_id              = data.aws_subnets.default.ids[0]
   vpc_security_group_ids = [aws_security_group.app_sg.id]
+  associate_public_ip_address = true
 
   # instance can call ECR APIs
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
@@ -159,5 +162,8 @@ resource "aws_instance" "docker_server" {
 
   tags = {
     Name = "${var.name_prefix}-ec2"
+    depends_on = [
+      aws_iam_role_policy_attachment.ecr_pull_attach
+    ]
   }
 }

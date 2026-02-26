@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # terraform fills in:
 #   ${aws_region}, ${ecr_registry}, ${ecr_image}, ${host_port}, ${container_port}
 set -euxo pipefail
