@@ -7,10 +7,10 @@ The project is designed for simple, fast deployment using AWS services — curre
 
 ## 📌 Features
 
-- Simple static quiz UI  
-- Instant scoring and feedback  
-- Zero backend dependencies  
-- Fully portable — runs anywhere that can serve static files  
+- Simple static quiz UI
+- Instant scoring and feedback
+- Zero backend dependencies
+- Fully portable — runs anywhere that can serve static files
 - Deployable via:
   - **Amazon S3** (static hosting)
   - **Amazon ECR** (container image for future ECS hosting)
@@ -66,3 +66,4 @@ docker build -t quiz-app .
 docker tag quiz-app:latest <aws_account_id>.dkr.ecr.<region>.amazonaws.com/quiz-app:latest
 
 docker push <aws_account_id>.dkr.ecr.<region>.amazonaws.com/quiz-app:latest
+```
