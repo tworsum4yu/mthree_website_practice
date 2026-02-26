@@ -8,9 +8,14 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      host: ${{ secrets.EC2_HOST }}
+      username: ${{ secrets.EC2_USER }}
+      key: ${{ secrets.EC2_SSH_KEY }}
     steps:
       - uses: actions/checkout@v4
 
+      ### Prettier and ESlint checks ###
       - name: Node setup
         uses: actions/setup-node@v4
         with:
@@ -33,17 +38,38 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      ### Upload to S3 ###
       - name: upload src to S3
         run: |
           aws s3 sync src/ s3://${{ secrets.S3_BUCKET }}/ --delete
 
+      #### Push Docker Image to ECR ####
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, Tag and Push Docker Image
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          REPO: ${{ secrets.ECR_REPOSITORY_NAME }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail  
+
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+          IMAGE_SHA=${REGISTRY}/$REPO:$SHA
+          IMAGE_LATEST="${REGISTRY}/${REPO}:latest"
+
+          aws ecr describe-repositories --repository-names $REPO || aws ecr create-repository --repository-name $REPO
+
+          docker build -t "${IMAGE_SHA}" -t "${IMAGE_LATEST}" .  
+          docker push "${IMAGE_SHA}"  
+          docker push "${IMAGE_LATEST}"
+
       # EC2 preflight (check if EC2 secrets are available, skip otherwise)
       - name: EC2 preflight check
         id: preflight
-        env:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
         run: |
           set -e
           missing=0
@@ -62,6 +88,7 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
+      ### Deploy to EC2 ###
       - name: deploy on EC2 (pull from S3, reload NGINX)
         if: steps.preflight.outputs.ready == 'true'
         uses: appleboy/ssh-action@v1.0.3
