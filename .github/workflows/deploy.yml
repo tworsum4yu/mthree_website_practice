@@ -56,13 +56,16 @@ jobs:
           set -euo pipefail  
 
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          IMAGE=$ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$REPO:$SHA
+          REGISTRY="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+          IMAGE_SHA=${REGISTRY}/$REPO:$SHA
+          IMAGE_LATEST="${REGISTRY}/${REPO}:latest"
 
           aws ecr describe-repositories --repository-names $REPO || aws ecr create-repository --repository-name $REPO
 
-          docker build -t $REPO:$SHA .
-          docker tag $REPO:$SHA $IMAGE
-          docker push $IMAGE
+          docker build -t "${IMAGE_SHA}" -t "${IMAGE_LATEST}" .  
+          docker push "${IMAGE_SHA}"  
+          docker push "${IMAGE_LATEST}" 
 
       # EC2 preflight (check if EC2 secrets are available, skip otherwise)
       - name: EC2 preflight check
