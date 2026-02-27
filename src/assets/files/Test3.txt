@@ -1,0 +1,23 @@
+Q: What is 2 + 2?
+A: 4
+A: 3
+A: 5
+C: 4
+
+Q: Capital of France?
+A: London
+A: Paris
+A: Berlin
+C: Paris
+
+Q: What's my name?
+C: Theon
+C: Beckford
+
+Q: What's the best sweet?
+A: Haribo
+A: Reese's Cups
+A: Snickers
+C: Haribo
+C: Reese's Cups
+C: Snickers

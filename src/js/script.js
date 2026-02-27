@@ -101,7 +101,7 @@ if (quiz) {
             ...e.target.querySelectorAll("input[name='" + qName + "']:checked"),
           ].map((a) => a.value);
           const sameLength = userAnswer.length == q.correct.length;
-          const sameValues = userAnswer.every((a) => q.correct.includes(a.value));
+          const sameValues = userAnswer.every((a) => q.correct.includes(a));
 
           if (sameLength && sameValues) score++;
         } else {
@@ -131,7 +131,7 @@ const gif = document.getElementById('resultGif');
 const scoreMess = document.getElementById('resultScore');
 
 if (gif && scoreMess) {
-  scoreMess.textContent = 'You scored ' + score;
+  scoreMess.textContent = 'You scored ' + score + " out of " + data.length;
 
   if (score / data.length < 0.5) {
     gif.src = '../assets/sad.gif';
