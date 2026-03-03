@@ -125,3 +125,27 @@ input[type='submit']:active {
   height: auto;
   object-fit: cover;
 }
+
+#index {
+  align-items: center;
+  text-align: center;
+}
+
+.file-upload input {
+  display: none;
+}
+
+.file-upload {
+  background: #4a6cf7;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  display: inline-block;
+}
+
+.file-upload:hover {
+  background: #3a57d0;
+}
