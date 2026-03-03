@@ -83,25 +83,25 @@ function renderResults(data) {
 
     const count = index + 1;
 
-    const h1 = document.createElement('h1');
-    h1.textContent = "Q" + count + ": " + q.question;
+    const h2 = document.createElement('h2');
+    h2.textContent = "Q" + count + ": " + q.question;
 
-    resultsPage.appendChild(h1);
+    resultsPage.appendChild(h2);
 
-    const h2_1 = document.createElement("h2");
-    h2_1.textContent = "Your answer: ";
+    const label1 = document.createElement("label");
+    label1.textContent = "Your answer: ";
 
-    resultsPage.appendChild(h2_1);
+    resultsPage.appendChild(label1);
 
     const p1 = document.createElement("p");
     p1.textContent = answers[index];
 
     resultsPage.appendChild(p1);
 
-    const h2_2 = document.createElement("h2");
-    h2_2.textContent = "Correct answer: ";
+    const label2 = document.createElement("label");
+    label2.textContent = "Correct answer: ";
 
-    resultsPage.appendChild(h2_2);
+    resultsPage.appendChild(label2);
 
     const p2 = document.createElement("p");
     p2.textContent = q.correct;
@@ -155,12 +155,12 @@ if (quiz) {
           if (q.correct.includes(userAnswer.value)) score++;
         }
       } else {
-        const userAnswer = e.target.elements[qName].value.trim().toLowerCase();
+        const userAnswer = e.target.elements[qName].value.trim();
         const correct = q.correct.map((c) => c.toLowerCase());
 
         answers[index] = userAnswer;
 
-        if (correct.includes(userAnswer)) score++;
+        if (correct.includes(userAnswer.toLowerCase())) score++;
       }
     });
 
