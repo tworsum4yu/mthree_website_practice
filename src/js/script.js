@@ -1,6 +1,3 @@
-// Index page
-const quiz = document.getElementById('quiz');
-
 // Do check to ensure that this works properly
 function parseQuiz(text) {
   const blocks = text.trim().split('\r\n\r\n');
@@ -15,6 +12,8 @@ function parseQuiz(text) {
 }
 
 function renderQuiz(quizData) {
+  console.log('rendering quiz');
+
   const quizForm = document.getElementById('quizForm');
   quizForm.innerHTML = '';
 
@@ -73,55 +72,64 @@ function renderQuiz(quizData) {
 }
 
 function renderResults(data) {
+  const resultsPage = document.getElementById('resultsDisplay');
+  resultsPage.innerHTML = '';
 
-  const resultsPage = document.getElementById("resultsDisplay");
-  resultsPage.innerHTML = "";
-
-  const answers = JSON.parse(localStorage.getItem("answers"));
+  const answers = JSON.parse(localStorage.getItem('answers'));
 
   data.forEach((q, index) => {
-
     const count = index + 1;
 
     const h2 = document.createElement('h2');
-    h2.textContent = "Q" + count + ": " + q.question;
+    h2.textContent = 'Q' + count + ': ' + q.question;
 
     resultsPage.appendChild(h2);
 
-    const label1 = document.createElement("label");
-    label1.textContent = "Your answer: ";
+    const label1 = document.createElement('label');
+    label1.textContent = 'Your answer: ';
 
     resultsPage.appendChild(label1);
 
-    const p1 = document.createElement("p");
+    const p1 = document.createElement('p');
     p1.textContent = answers[index];
 
     resultsPage.appendChild(p1);
 
-    const label2 = document.createElement("label");
-    label2.textContent = "Correct answer: ";
+    const label2 = document.createElement('label');
+    label2.textContent = 'Correct answer: ';
 
     resultsPage.appendChild(label2);
 
-    const p2 = document.createElement("p");
+    const p2 = document.createElement('p');
     p2.textContent = q.correct;
 
     resultsPage.appendChild(p2);
-
-  })
+  });
 }
 
-if (quiz) {
+const index = document.getElementById('index');
 
+if (index) {
   document.getElementById('fileInput').addEventListener('change', function () {
     const file = this.files[0];
     const reader = new FileReader();
     reader.onload = function () {
       const quizData = parseQuiz(reader.result);
       localStorage.setItem('quizData', JSON.stringify(quizData));
-      renderQuiz(quizData);
+
+      window.location.href = 'pages/quiz.html';
     };
     reader.readAsText(file);
+  });
+}
+
+// Quiz page
+const quiz = document.getElementById('quiz');
+
+if (quiz) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const quizData = JSON.parse(localStorage.getItem('quizData'));
+    renderQuiz(quizData);
   });
 
   quiz.addEventListener('submit', function (e) {
@@ -165,16 +173,16 @@ if (quiz) {
     });
 
     localStorage.setItem('score', score);
-    localStorage.setItem('answers', JSON.stringify(answers));    
+    localStorage.setItem('answers', JSON.stringify(answers));
 
-    window.location.href = 'pages/results.html';
+    window.location.href = 'results.html';
   });
 }
 
 // Results page
-const result = document.getElementsByClassName("results");
+const result = document.getElementsByClassName('results');
 
-if(result) {
+if (result) {
   const data = JSON.parse(localStorage.getItem('quizData'));
   const score = Number(localStorage.getItem('score'));
 
@@ -182,7 +190,7 @@ if(result) {
   const scoreMess = document.getElementById('resultScore');
 
   if (gif && scoreMess) {
-    scoreMess.textContent = 'You scored ' + score + " out of " + data.length;
+    scoreMess.textContent = 'You scored ' + score + ' out of ' + data.length;
 
     if (score / data.length < 0.5) {
       gif.src = '../assets/sad.gif';
