@@ -1,9 +1,16 @@
 // Do check to ensure that this works properly
 function parseQuiz(text) {
-  const blocks = text.trim().split('\r\n\r\n');
-  console.log(blocks);
+  let normalised = text.trim();
+
+  if (text.includes('\r\n')) {
+    normalised = text.replace(/\r\n/g, '\n').trim();
+  } else if (text.includes('\r')) {
+    normalised = text.replace(/\r/g, '\n').trim();
+  }
+  // const blocks = text.trim().split('\r\n\r\n');
+  const blocks = normalised.split('\n\n');
   return blocks.map((block) => {
-    const lines = block.split('\r\n');
+    const lines = block.split('\n');
     const question = lines.find((l) => l.startsWith('Q:')).slice(3);
     const answers = lines.filter((l) => l.startsWith('A:')).map((a) => a.slice(3));
     const correct = lines.filter((l) => l.startsWith('C:')).map((c) => c.slice(3));
@@ -12,8 +19,6 @@ function parseQuiz(text) {
 }
 
 function renderQuiz(quizData) {
-  console.log('rendering quiz');
-
   const quizForm = document.getElementById('quizForm');
   quizForm.innerHTML = '';
 
