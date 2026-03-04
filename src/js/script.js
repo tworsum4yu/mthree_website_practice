@@ -1,51 +1,210 @@
-// Index page
+// Do check to ensure that this works properly
+function parseQuiz(text) {
+  let normalised = text.trim();
+
+  if (text.includes('\r\n')) {
+    normalised = text.replace(/\r\n/g, '\n').trim();
+  } else if (text.includes('\r')) {
+    normalised = text.replace(/\r/g, '\n').trim();
+  }
+  // const blocks = text.trim().split('\r\n\r\n');
+  const blocks = normalised.split('\n\n');
+  return blocks.map((block) => {
+    const lines = block.split('\n');
+    const question = lines.find((l) => l.startsWith('Q:')).slice(3);
+    const answers = lines.filter((l) => l.startsWith('A:')).map((a) => a.slice(3));
+    const correct = lines.filter((l) => l.startsWith('C:')).map((c) => c.slice(3));
+    return { question, answers, correct };
+  });
+}
+
+function renderQuiz(quizData) {
+  const quizForm = document.getElementById('quizForm');
+  quizForm.innerHTML = '';
+
+  quizData.forEach((q, index) => {
+    const count = index + 1;
+
+    const label = document.createElement('label');
+
+    label.textContent = 'Q' + count + ': ' + q.question;
+
+    quizForm.appendChild(label);
+
+    if (q.answers.length > 0) {
+      let type = '';
+
+      if (q.correct.length > 1) {
+        type = 'checkbox';
+      } else {
+        type = 'radio';
+      }
+
+      q.answers.forEach((a) => {
+        const input = document.createElement('input');
+        const inputLabel = document.createElement('label');
+
+        input.type = type;
+        input.value = a;
+        input.name = 'Q' + count;
+
+        inputLabel.textContent = a;
+        inputLabel.htmlFor = 'Q' + count;
+
+        quizForm.appendChild(input);
+        quizForm.appendChild(inputLabel);
+      });
+    } else {
+      const input = document.createElement('input');
+
+      input.type = 'text';
+      input.name = 'Q' + count;
+      input.value = '';
+
+      quizForm.appendChild(input);
+    }
+
+    quizForm.appendChild(document.createElement('br'));
+    quizForm.appendChild(document.createElement('br'));
+  });
+
+  const submit = document.createElement('input');
+
+  submit.type = 'submit';
+  submit.value = 'Submit';
+
+  quizForm.appendChild(submit);
+}
+
+function renderResults(data) {
+  const resultsPage = document.getElementById('resultsDisplay');
+  resultsPage.innerHTML = '';
+
+  const answers = JSON.parse(localStorage.getItem('answers'));
+
+  data.forEach((q, index) => {
+    const count = index + 1;
+
+    const h2 = document.createElement('h2');
+    h2.textContent = 'Q' + count + ': ' + q.question;
+
+    resultsPage.appendChild(h2);
+
+    const label1 = document.createElement('label');
+    label1.textContent = 'Your answer: ';
+
+    resultsPage.appendChild(label1);
+
+    const p1 = document.createElement('p');
+    p1.textContent = answers[index];
+
+    resultsPage.appendChild(p1);
+
+    const label2 = document.createElement('label');
+    label2.textContent = 'Correct answer: ';
+
+    resultsPage.appendChild(label2);
+
+    const p2 = document.createElement('p');
+    p2.textContent = q.correct;
+
+    resultsPage.appendChild(p2);
+  });
+}
+
+const index = document.getElementById('index');
+
+if (index) {
+  document.getElementById('fileInput').addEventListener('change', function () {
+    const file = this.files[0];
+    const reader = new FileReader();
+    reader.onload = function () {
+      const quizData = parseQuiz(reader.result);
+      localStorage.setItem('quizData', JSON.stringify(quizData));
+
+      window.location.href = 'pages/quiz.html';
+    };
+    reader.readAsText(file);
+  });
+}
+
+// Quiz page
 const quiz = document.getElementById('quiz');
 
 if (quiz) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const quizData = JSON.parse(localStorage.getItem('quizData'));
+    renderQuiz(quizData);
+  });
+
   quiz.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    const correct = {
-      Q1: 'saiga antelope',
-      Q2: 'FALSE',
-      Q3: 'W_G',
-      Q4: 'green',
-    };
+    const data = JSON.parse(localStorage.getItem('quizData'));
+    const answers = {};
 
     let score = 0;
 
-    const A1 = this.elements['Q1'].value.trim().toLowerCase();
-    if (A1 == correct.Q1.toLowerCase()) score++;
+    data.forEach((q, index) => {
+      const count = index + 1;
+      const qName = 'Q' + count;
 
-    const A2 = this.querySelector('input[name="Q2"]:checked');
-    if (A2.value === correct.Q2) score++;
+      if (q.answers.length > 0) {
+        if (q.correct.length > 1) {
+          const userAnswer = [
+            ...e.target.querySelectorAll("input[name='" + qName + "']:checked"),
+          ].map((a) => a.value);
+          const sameLength = userAnswer.length == q.correct.length;
+          const sameValues = userAnswer.every((a) => q.correct.includes(a));
 
-    const A3 = this.querySelector('input[name="Q3"]:checked');
-    if (A3.value === correct.Q3) score++;
+          answers[index] = userAnswer;
 
-    const A4 = this.elements['Q4'].value.trim().toLowerCase();
-    if (A4 == correct.Q4.toLowerCase()) score++;
+          if (sameLength && sameValues) score++;
+        } else {
+          const userAnswer = e.target.querySelector("input[name='" + qName + "']:checked");
+
+          answers[index] = userAnswer.value;
+
+          if (q.correct.includes(userAnswer.value)) score++;
+        }
+      } else {
+        const userAnswer = e.target.elements[qName].value.trim();
+        const correct = q.correct.map((c) => c.toLowerCase());
+
+        answers[index] = userAnswer;
+
+        if (correct.includes(userAnswer.toLowerCase())) score++;
+      }
+    });
 
     localStorage.setItem('score', score);
+    localStorage.setItem('answers', JSON.stringify(answers));
 
-    window.location.href = 'pages/results.html';
+    window.location.href = 'results.html';
   });
 }
 
 // Results page
-const score = Number(localStorage.getItem('score'));
+const result = document.getElementsByClassName('results');
 
-const gif = document.getElementById('resultGif');
-const scoreMess = document.getElementById('resultScore');
+if (result) {
+  const data = JSON.parse(localStorage.getItem('quizData'));
+  const score = Number(localStorage.getItem('score'));
 
-if (gif && scoreMess) {
-  scoreMess.textContent = 'You scored ' + score;
+  const gif = document.getElementById('resultGif');
+  const scoreMess = document.getElementById('resultScore');
 
-  if (score < 3) {
-    gif.src = '/assets/sad.gif';
-  } else if (score == 3) {
-    gif.src = '/assets/edp.gif';
-  } else {
-    gif.src = '/assets/rad.gif';
+  if (gif && scoreMess) {
+    scoreMess.textContent = 'You scored ' + score + ' out of ' + data.length;
+
+    if (score / data.length < 0.5) {
+      gif.src = '../assets/sad.gif';
+    } else if (score / data.length < 0.75) {
+      gif.src = '../assets/edp.gif';
+    } else {
+      gif.src = '../assets/rad.gif';
+    }
   }
+
+  renderResults(data);
 }

@@ -1,36 +1,16 @@
 <!doctype html>
 <head>
   <link rel="stylesheet" href="css/styles.css" />
-  <title>Animal Quiz</title>
+  <title>Quiz</title>
 </head>
 <body>
-  <h1>Animal Quiz</h1>
-  <p>Welcome to the animal quiz. Answer the questions below correctly or be square.</p>
-  <form id="quiz">
-    <label>Q1: What animal is displayed below?</label>
-    <img src="assets/saiga.jpeg" alt="Nonono you can't cheat this quiz" />
-    <input type="text" id="Q1" name="Q1" /><br /><br />
-
-    <label>Q2: Mantis shrimp have the ability to punch at the speed of sound. True or False.</label>
-    <input type="radio" id="true" name="Q2" value="TRUE" />
-    <label for="true">True</label>
-    <input type="radio" id="false" name="Q2" value="FALSE" />
-    <label for="false">False</label><br /><br />
-
-    <label>Q3: What colour is the dress?</label>
-    <img src="assets/dress.jpg" alt="Picutre of Gold and White (or Blue and Black) dress" />
-    <input type="radio" id="Q3_1" name="Q3" value="W_G" />
-    <label for="Q3_1">White and Gold</label><br />
-    <input type="radio" id="Q3_2" name="Q3" value="B_B" />
-    <label for="Q3_2">Blue and Black</label><br />
-    <input type="radio" id="Q3_3" name="Q3" value="B_G" />
-    <label for="Q3_3">Blue and Gold</label><br />
-    <input type="radio" id="Q3_4" name="Q3" value="W_B" />
-    <label for="Q3_4">White and Black</label><br /><br />
-
-    <label>Q4: What is my favourite colour?</label><br />
-    <input type="text" id="fav_col" name="Q4" value="" /><br /><br />
-    <input type="submit" value="Submit" />
-  </form>
+  <div id="index">
+    <h1>File Import</h1>
+    <label>Please select the file to import below</label>
+    <label class="file-upload">
+      <span>Select Quiz File</span>
+      <input type="file" id="fileInput" accept=".txt" />
+    </label>
+  </div>
   <script src="js/script.js"></script>
 </body>
