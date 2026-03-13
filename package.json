@@ -28,8 +28,11 @@
   "homepage": "https://github.com/tworsum4yu/mthree_website_practice#readme",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "cypress": "^15.11.0",
+    "cypress-file-upload": "^5.0.8",
     "eslint": "^10.0.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-cypress": "^6.2.0",
     "globals": "^17.3.0",
     "prettier": "^3.8.1"
   }
