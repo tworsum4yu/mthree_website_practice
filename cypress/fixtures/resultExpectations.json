@@ -1,0 +1,13 @@
+{
+  "low": {
+    "minScore": 0,
+    "maxScore": 1,
+    "gifName": "low.gif"
+  },
+
+  "medium": {
+  },
+
+  "high": {
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "low": [
+    { "name": "Q1", "type": "radio", "value": 1 },
+    { "name": "Q2", "type": "radio", "value": 0 },
+    { "name": "Q3", "type": "text", "value": "Wrong" },
+    { "name": "Q4", "type": "checkbox", "value": [0] }
+  ],
+
+  "medium": [
+  ],
+
+  "high": [
+  ]
+}
