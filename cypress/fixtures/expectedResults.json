@@ -1,0 +1,57 @@
+{
+  "Test": {
+    "Q1": {
+      "CA": [4],
+      "UA": [4]
+    },
+    "Q2": {
+      "CA": ["Paris"],
+      "UA": ["London"]
+    },
+    "Q3": {
+      "CA": ["Theon", "Beckford"],
+      "UA": ["Theon"]
+    },
+    "scores": {
+      "user": 2,
+      "total": 3
+    },
+    "gif": "edp.gif"
+  },
+
+  "Test2": {
+    "Q1": {
+      "CA": ["Theon"],
+      "UA": ["Leroy"]
+    },
+    "scores": {
+      "user": 1,
+      "total": 1
+    },
+    "gif": "sad.gif"
+  },
+
+  "Test3": {
+    "Q1": {
+      "CA": [4],
+      "UA": [4]
+    },
+    "Q2": {
+      "CA": ["Paris"],
+      "UA": ["Paris"]
+    },
+    "Q3": {
+      "CA": ["Theon", "Beckford"],
+      "UA": ["Theon"]
+    },
+    "Q4": {
+      "CA": ["Haribo", "Reese's Cups", "Snickers"],
+      "UA": ["Haribo", "Reese's Cups", "Snickers"]
+    },
+    "scores": {
+      "user": 2,
+      "total": 3
+    },
+    "gif": "rad.gif"
+  }
+}
