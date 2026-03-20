@@ -107,7 +107,7 @@ function answerRadioQuestions(qName, value) {
 
 function answerCheckboxQuestions(qName, values) {
   values.forEach((value) => {
-    cy.get("input[name=" + qName + "][value=" + value + "]").check();
+    cy.get(`input[name="${qName}"][value="${value}"]`).check();
   })
 }
 
@@ -233,7 +233,7 @@ describe('quiz app', () => {
     assertResultsPageLoaded("Test");
   });
 
-  const files = ['Test.txt', 'Test2.txt', 'Test3.txt'];
+  const files = ['Test.txt', 'Test2.txt', "Test3.txt"];
 
   files.forEach((fileName) => {
     it("Full file test: " + fileName, () => {
