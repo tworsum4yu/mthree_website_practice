@@ -27,88 +27,85 @@
 
 // helper functions
 function loadSetAnswers() {
-    return cy.fixture('setAnswers');
+  return cy.fixture('setAnswers');
 }
 
 function loadExpectedResults() {
-    return cy.fixture('expectedResults')
+  return cy.fixture('expectedResults');
 }
 
 function loadQuestions() {
-    return cy.fixture('questions.json')
+  return cy.fixture('questions.json');
 }
 
-
 function visitHomePage() {
-    cy.goToQuizApp();
+  cy.goToQuizApp();
 }
 
 function uploadQuizFile(fileName) {
-    cy.uploadQuizFile(fileName);
+  cy.uploadQuizFile(fileName);
 }
 
 function assertQuizPageLoaded() {
+  cy.location('pathname').should('include', 'quiz.html');
 
-    cy.location('pathname').should('include', 'quiz.html');
-
-    cy.window().then((win) => {
-        const quizData = JSON.parse(win.localStorage.getItem('quizData'));
-        expect(quizData).to.exist;
-    })
-
+  cy.window().then((win) => {
+    const quizData = JSON.parse(win.localStorage.getItem('quizData'));
+    expect(quizData).to.exist;
+  });
 }
 
 function assertQuizQuestionsRendered(fileName) {
+  loadQuestions().then((data) => {
+    const questions = Object.values(data[fileName]);
 
-    loadQuestions().then((data) => {
+    cy.get('label')
+      .filter(":contains('Q')")
+      .then((label) => {
+        const count = label.length;
+        expect(count).to.equal(questions.length);
+      });
 
-        const questions = Object.values(data[fileName]);
+    cy.get('label')
+      .filter(":contains('Q')")
+      .each((label, index) => {
+        expect(label.text()).to.include(questions[index].question);
 
-        cy.get("label").filter(":contains('Q')").then((label) => {
-            const count = label.length;
-            expect(count).to.equal(questions.length);
-        })
+        const qName = 'Q' + (index + 1);
 
-        cy.get("label").filter(":contains('Q')").each((label, index) => {
-            expect(label.text()).to.include(questions[index].question);
+        cy.get('input[name=' + qName + ']').then((input) => {
+          const inputType = input.attr('type');
+          expect(inputType).to.equal(questions[index].type);
 
-            const qName = "Q" + (index + 1);
+          if (inputType == 'radio' || inputType == 'checkbox') {
+            cy.get('label[for=' + qName + ']').each((lab, ind) => {
+              expect(lab.text()).to.include(questions[index].answers[ind]);
+            });
+          }
+        });
+      });
+  });
 
-            cy.get("input[name=" + qName + "]").then((input) => {
-
-                const inputType = input.attr("type");
-                expect(inputType).to.equal(questions[index].type);
-
-                if(inputType == "radio" || inputType == "checkbox") {
-                    cy.get("label[for=" + qName + "]").each((lab, ind) => {
-                        expect(lab.text()).to.include(questions[index].answers[ind]);
-                    });
-                }
- 
-            })
-        })
-
+  expect(cy.get("input[type='submit']")).to.exist;
+  cy.get("input[type='submit']")
+    .invoke('val')
+    .then((val) => {
+      expect(val).to.equal('Submit');
     });
-
-    expect(cy.get("input[type='submit']")).to.exist;
-    cy.get("input[type='submit']").invoke("val").then((val) => {
-        expect(val).to.equal("Submit");
-    });
-
 }
 
 function answerTextQuestion(qName, value) {
-  cy.get("input[name=" + qName + "]").type(value, { delay: 200 });
+  cy.get('input[name=' + qName + ']').type(value, { delay: 200 });
 }
 
 function answerRadioQuestions(qName, value) {
-   cy.get("input[name=" + qName + "][value=" + value + "]").check();
+  cy.get('input[name=' + qName + '][value=' + value + ']').check();
 }
 
 function answerCheckboxQuestions(qName, values) {
   values.forEach((value) => {
     cy.get(`input[name="${qName}"][value="${value}"]`).check();
-  })
+  });
 }
 
 function submitQuiz() {
@@ -116,95 +113,80 @@ function submitQuiz() {
 }
 
 function answerQuestions(fileName) {
-  
-    loadSetAnswers().then((data) => {
+  loadSetAnswers().then((data) => {
+    const answers = Object.values(data[fileName]);
 
-        const answers = Object.values(data[fileName]);
+    cy.get('label')
+      .filter(":contains('Q')")
+      .each((label, index) => {
+        const qName = 'Q' + (index + 1);
 
-        cy.get("label").filter(":contains('Q')").each((label, index) => {
+        cy.get('input[name=' + qName + ']').then((input) => {
+          const type = input.attr('type');
 
-            const qName = "Q" + (index + 1);
+          switch (type) {
+            case 'radio':
+              answerRadioQuestions(qName, answers[index].value);
+              break;
 
-            cy.get("input[name=" + qName + "]").then((input) => {
+            case 'checkbox':
+              answerCheckboxQuestions(qName, answers[index].value);
+              break;
 
-              const type = input.attr("type");
-
-              switch (type)
-              {
-
-                case "radio":
-                  answerRadioQuestions(qName, answers[index].value);
-                  break;
-                
-                case "checkbox":
-                  answerCheckboxQuestions(qName, answers[index].value);
-                  break;
-
-                default:
-                  answerTextQuestion(qName, answers[index].value);
-
-              }
-            
-            })
-
-        })
-
-    })
-
+            default:
+              answerTextQuestion(qName, answers[index].value);
+          }
+        });
+      });
+  });
 }
 
 function assertResultsPageLoaded(testName) {
+  cy.location('pathname').should('include', 'results.html');
 
-    cy.location('pathname').should('include', 'results.html');
+  loadExpectedResults().then((data) => {
+    const results = Object.values(data[testName]);
 
-    loadExpectedResults().then((data) => {
+    const resScores = Object.values(data[testName].scores);
+    const resGif = data[testName].gif;
 
-      const results = Object.values(data[testName]);
+    assertScoreIsDisplayed(resScores);
+    assertResultGif(resGif);
 
-      const resScores = Object.values(data[testName].scores);
-      const resGif = data[testName].gif;
-
-      assertScoreIsDisplayed(resScores);
-      assertResultGif(resGif);
-
-      cy.get("h2").each((h2, index) => {
-        
-        assertUserAnswersDisplayed(index, results[index].UA);
-        assertCorrectAnswersDisplayed(index, results[index].CA);
-
-      })
-
-    })
-
+    cy.get('h2').each((h2, index) => {
+      assertUserAnswersDisplayed(index, results[index].UA);
+      assertCorrectAnswersDisplayed(index, results[index].CA);
+    });
+  });
 }
 
 function assertScoreIsDisplayed(scores) {
-  cy.get("#resultScore").should("contain", scores[0]);
-  cy.get("#resultScore").should("contain", scores[1]);
+  cy.get('#resultScore').should('contain', scores[0]);
+  cy.get('#resultScore').should('contain', scores[1]);
 }
 
 function assertUserAnswersDisplayed(count, data) {
-  cy.get("#UA" + count).then((p) => {
+  cy.get('#UA' + count).then((p) => {
     const text = p.text();
     data.forEach((d) => {
       expect(text).to.include(d);
-    })
-  })
+    });
+  });
 }
 
 function assertCorrectAnswersDisplayed(count, data) {
-  cy.get("#CA" + count).then((p) => {
+  cy.get('#CA' + count).then((p) => {
     const text = p.text();
     data.forEach((d) => {
       expect(text).to.include(d);
-    })
-  })
+    });
+  });
 }
 
 function assertResultGif(gifName) {
-  cy.get("#resultGif").should("be.visible");
-  cy.get("#resultGif").should("have.prop", "naturalWidth").and("be.greaterThan", 0);
-  cy.get("#resultGif").should("have.attr", "src").and("include", gifName);
+  cy.get('#resultGif').should('be.visible');
+  cy.get('#resultGif').should('have.prop', 'naturalWidth').and('be.greaterThan', 0);
+  cy.get('#resultGif').should('have.attr', 'src').and('include', gifName);
 }
 
 // test suite
@@ -219,25 +201,25 @@ describe('quiz app', () => {
     visitHomePage();
     uploadQuizFile('Test.txt');
     assertQuizPageLoaded();
-    assertQuizQuestionsRendered("Test");
+    assertQuizQuestionsRendered('Test');
   });
 
   it('submits a completed quiz and shows the results page', () => {
     visitHomePage();
     uploadQuizFile('Test.txt');
-    assertQuizPageLoaded("Test");
+    assertQuizPageLoaded('Test');
 
-    answerQuestions("Test");
+    answerQuestions('Test');
     submitQuiz();
 
-    assertResultsPageLoaded("Test");
+    assertResultsPageLoaded('Test');
   });
 
-  const files = ['Test.txt', 'Test2.txt', "Test3.txt"];
+  const files = ['Test.txt', 'Test2.txt', 'Test3.txt'];
 
   files.forEach((fileName) => {
-    it("Full file test: " + fileName, () => {
-      const name = fileName.replace(/\.txt$/, "");
+    it('Full file test: ' + fileName, () => {
+      const name = fileName.replace(/\.txt$/, '');
 
       visitHomePage();
       uploadQuizFile(fileName);
@@ -247,7 +229,6 @@ describe('quiz app', () => {
       submitQuiz();
 
       assertResultsPageLoaded(name);
-    })
-  })
-
+    });
+  });
 });

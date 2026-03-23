@@ -5,14 +5,12 @@
     { "name": "Q3", "type": "text", "value": "Theon" }
   ],
 
-  "Test2": [
-    { "name": "Q3", "type": "text", "value": "Leroy" }
-  ],
+  "Test2": [{ "name": "Q3", "type": "text", "value": "Leroy" }],
 
   "Test3": [
     { "name": "Q1", "type": "radio", "value": 4 },
     { "name": "Q2", "type": "radio", "value": "Paris" },
     { "name": "Q3", "type": "text", "value": "Theon" },
-    { "name": "Q4", "type": "checkbox", "value": ["Haribo", "Reese's Cups", "Snickers"]}
+    { "name": "Q4", "type": "checkbox", "value": ["Haribo", "Reese's Cups", "Snickers"] }
   ]
 }

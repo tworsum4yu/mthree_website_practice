@@ -27,48 +27,44 @@ function parseQuiz(text) {
 }
 
 describe('QuizTest', () => {
-
   const expected = [
     {
-      file: "Test.txt",
-      Q1_type: "radio",
-      Q2_type: "radio",
-      Q3_type: "text"
+      file: 'Test.txt',
+      Q1_type: 'radio',
+      Q2_type: 'radio',
+      Q3_type: 'text',
     },
     {
-      file: "Test2.txt",
-      Q1_type: "text",
+      file: 'Test2.txt',
+      Q1_type: 'text',
     },
     {
-      file: "Test3.txt",
-      Q1_type: "radio",
-      Q2_type: "radio",
-      Q3_type: "text",
-      Q4_type: "checkbox"
-    }
-  ]
+      file: 'Test3.txt',
+      Q1_type: 'radio',
+      Q2_type: 'radio',
+      Q3_type: 'text',
+      Q4_type: 'checkbox',
+    },
+  ];
 
   context('File Import Checks', () => {
     it('File Import Page Render Test', () => {
       cy.visit(baseUrl + 'index.html');
 
-      cy.get('h1').should('contain', "File Import");
-      cy.get('label').first().should('contain', "Please select the file to import below");
+      cy.get('h1').should('contain', 'File Import');
+      cy.get('label').first().should('contain', 'Please select the file to import below');
 
-      cy.get('label.file-upload').should('contain', "Select Quiz File");
-      cy.get('label.file-upload').should('have.css', "background-color", "rgb(74, 108, 247)");
-
+      cy.get('label.file-upload').should('contain', 'Select Quiz File');
+      cy.get('label.file-upload').should('have.css', 'background-color', 'rgb(74, 108, 247)');
     });
 
     it('File Import Attachment Test', () => {
-
       cy.visit(baseUrl + 'index.html');
 
       expected.forEach((tests) => {
-
-        cy.log("=====================================");
-        cy.log("File Import check for " + tests.file);
-        cy.log("=====================================");
+        cy.log('=====================================');
+        cy.log('File Import check for ' + tests.file);
+        cy.log('=====================================');
 
         cy.get('input[type="file"]').attachFile({
           filePath: tests.file,
@@ -79,10 +75,9 @@ describe('QuizTest', () => {
         cy.window().then((win) => {
           const quizData = JSON.parse(win.localStorage.getItem('quizData'));
           expect(quizData).to.exist;
-        })
+        });
 
         cy.fixture(tests.file).then((content) => {
-          
           const parsedQuiz = parseQuiz(content);
 
           parsedQuiz.forEach((q, index) => {
@@ -90,26 +85,19 @@ describe('QuizTest', () => {
 
             cy.log(q.question);
 
-            cy.get("label").filter(":contains('Q')").eq(index).should('contain.text', q.question);
-          })
-
-        })
+            cy.get('label').filter(":contains('Q')").eq(index).should('contain.text', q.question);
+          });
+        });
 
         cy.visit(baseUrl + 'index.html');
-
-      })
-
+      });
     });
-
   });
-
 });
 
 // context('QuizTest', () => {
 //   it('End To End Test 1', () => {
 //     cy.visit(baseUrl + 'index.html');
-
-
 
 //     cy.get('input[type="file"]').attachFile({
 //       filePath: 'Test.txt',
