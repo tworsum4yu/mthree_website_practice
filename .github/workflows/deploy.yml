@@ -88,12 +88,18 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Debug host
+        run: |
+          echo "Host is: '${{ secrets.EC2_HOST }}'"
+          nslookup ${{ secrets.EC2_HOST }} || true
+          ping -c 3 ${{ secrets.EC2_HOST }} || true
+
       ### Deploy to EC2 ###
       - name: deploy on EC2 (pull from S3, reload NGINX)
         if: steps.preflight.outputs.ready == 'true'
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 'ec2-user@ec2-3-23-132-150.us-east-2.compute.amazonaws.com'
+          host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
