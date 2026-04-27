@@ -10,20 +10,15 @@ export default [
   // 2) lint js
   {
     files: ['**/*.js'],
-    plugins: {
-      cypress,
-    },
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
         ...globals.browser,
-        ...cypress.environments.globals.globals,
       },
     },
     rules: {
       ...js.configs.recommended.rules,
-      ...cypress.configs.recommended.rules,
 
       // common practical stuff
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
