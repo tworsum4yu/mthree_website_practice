@@ -11,10 +11,21 @@
       z.async = true;
       z.src = s;
       document.head.insertBefore(z, document.head.firstChild);
-    })('cwr', 'APP_MONITOR_ID', '1.0.0', 'us-east-1', 'https://client.rum.aws/...', {
-      sessionSampleRate: 1,
-      identityPoolId: 'YOUR_POOL_ID',
-    });
+    })(
+      'cwr',
+      '3db161c7-cd3d-4272-9317-d4d28e82e61a',
+      '1.0.0',
+      'us-east-1',
+      'https://client.rum.us-east-1.amazonaws.com/3.x/cwr.js',
+      {
+        sessionSampleRate: 1,
+        identityPoolId: 'us-east-1:bd5ed77a-d724-4745-a689-b4a22525ace0',
+        endpoint: 'https://dataplane.rum.us-east-1.amazonaws.com',
+        telemetries: ['performance', 'errors', 'http'],
+        allowCookies: true,
+        signing: true,
+      }
+    );
   </script>
   <title>Quiz</title>
 </head>
