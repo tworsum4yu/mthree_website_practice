@@ -11,10 +11,17 @@
       z.async = true;
       z.src = s;
       document.head.insertBefore(z, document.head.firstChild);
-    })('cwr', 'APP_MONITOR_ID', '1.0.0', 'us-east-1', 'https://client.rum.aws/...', {
-      sessionSampleRate: 1,
-      identityPoolId: 'YOUR_POOL_ID',
-    });
+    })(
+      'cwr',
+      'APP_MONITOR_ID',
+      '1.0.0',
+      'us-east-1',
+      'https://client.rum.us-east-1.amazonaws.com/...',
+      {
+        sessionSampleRate: 1,
+        identityPoolId: 'YOUR_POOL_ID',
+      }
+    );
   </script>
   <title>Quiz</title>
 </head>
