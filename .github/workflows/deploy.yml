@@ -88,12 +88,6 @@ jobs:
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Debug host
-        run: |
-          echo "Host is: '${{ secrets.EC2_HOST }}'"
-          nslookup ${{ secrets.EC2_HOST }} || true
-          ping -c 3 ${{ secrets.EC2_HOST }} || true
-
       ### Deploy to EC2 ###
       # - name: deploy on EC2 (pull from S3, reload NGINX)
       #   if: steps.preflight.outputs.ready == 'true'
