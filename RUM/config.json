@@ -1,0 +1,6 @@
+{
+    "AllowCookies": true,
+    "EnableXRay": false,
+    "SessionSampleRate": 1.0,
+    "Telemetries": ["errors", "performance", "http"]
+}

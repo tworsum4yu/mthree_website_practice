@@ -1,0 +1,212 @@
+[
+  {
+    "Id": "deletereq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "DeleteRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "bytesdown",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "BytesDownloaded",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "getreq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "GetRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "listreq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "ListRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "putreq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "PutRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "bytesup",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "BytesUploaded",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "numobjects",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "NumberOfObjects",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "StorageType", "Value": "AllStorageTypes" }
+        ]
+      },
+      "Period": 86400,
+      "Stat": "Average"
+    }
+  },
+  {
+    "Id": "bucketsize",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "BucketSizeBytes",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "StorageType", "Value": "StandardStorage" }
+        ]
+      },
+      "Period": 86400,
+      "Stat": "Average"
+    }
+  },
+  {
+    "Id": "errors5xx",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "5xxErrors",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "headreq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "HeadRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "allreq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "AllRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "errors4xx",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "4xxErrors",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "firstbyte",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "FirstByteLatency",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Average"
+    }
+  },
+  {
+    "Id": "totallatency",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "TotalRequestLatency",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Average"
+    }
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "MetricDataQueries": [
+    {
+      "Id": "pageViews",
+      "MetricStat": {
+        "Metric": {
+          "Namespace": "AWS/RUM",
+          "MetricName": "PageViewCount",
+          "Dimensions": [
+            {
+              "Name": "AppMonitorName",
+              "Value": "quiz_rum_app"
+            }
+          ]
+        },
+        "Period": 300,
+        "Stat": "Sum"
+      }
+    }
+  ]
+}

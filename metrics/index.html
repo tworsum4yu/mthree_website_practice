@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudFront Metrics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #0a0c10;
+      --surface:   #111318;
+      --surface2:  #191c24;
+      --border:    #252932;
+      --accent:    #f0a500;
+      --accent2:   #3b8ef3;
+      --danger:    #e05c5c;
+      --success:   #3ecf8e;
+      --muted:     #5a6070;
+      --text:      #d4d8e2;
+      --textdim:   #8892a4;
+      --mono:      'IBM Plex Mono', monospace;
+      --sans:      'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(240,165,0,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(240,165,0,.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,12,16,.85);
+      backdrop-filter: blur(12px);
+    }
+
+    .logo { display: flex; align-items: center; gap: .75rem; }
+    .logo-icon {
+      width: 32px; height: 32px;
+      background: var(--accent);
+      clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      display: grid; place-items: center;
+      font-size: 14px; color: #000; font-weight: 700;
+    }
+    .logo-text {
+      font-family: var(--mono); font-size: .85rem;
+      font-weight: 600; letter-spacing: .06em; color: var(--text);
+    }
+    .logo-text span { color: var(--accent); }
+
+    .header-meta {
+      font-family: var(--mono); font-size: .72rem;
+      color: var(--muted); text-align: right; line-height: 1.6;
+    }
+    .header-meta strong { color: var(--accent2); }
+
+    /* ── LOADING STATE ── */
+    #loading {
+      position: relative; z-index: 10;
+      text-align: center; padding: 4rem 2rem;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto 1.25rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading p {
+      font-family: var(--mono); font-size: .78rem;
+      color: var(--muted); letter-spacing: .06em;
+    }
+
+    /* ── UPLOAD ZONE (fallback) ── */
+    #upload-zone {
+      position: relative; z-index: 10;
+      margin: 3rem auto; max-width: 540px;
+      border: 2px dashed var(--border);
+      border-radius: 4px; padding: 3rem 2rem;
+      text-align: center; cursor: pointer;
+      transition: border-color .2s, background .2s;
+      display: none;
+    }
+    #upload-zone:hover, #upload-zone.drag-over {
+      border-color: var(--accent);
+      background: rgba(240,165,0,.04);
+    }
+    #upload-zone .up-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: .5; }
+    #upload-zone h2 {
+      font-family: var(--mono); font-size: .9rem;
+      font-weight: 600; margin-bottom: .5rem; letter-spacing: .05em;
+    }
+    #upload-zone p { font-size: .8rem; color: var(--textdim); }
+    .fetch-notice {
+      display: inline-block; margin-bottom: 1.25rem;
+      padding: .4rem .9rem;
+      background: rgba(224,92,92,.08);
+      border: 1px solid rgba(224,92,92,.25);
+      border-radius: 2px;
+      font-family: var(--mono); font-size: .7rem;
+      color: var(--danger); letter-spacing: .04em;
+    }
+    #upload-zone input[type=file] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .file-label {
+      display: inline-block; margin-top: 1rem;
+      padding: .45rem 1.25rem;
+      border: 1px solid var(--accent); color: var(--accent);
+      font-family: var(--mono); font-size: .75rem;
+      letter-spacing: .06em; border-radius: 2px;
+      transition: background .2s, color .2s;
+    }
+    #upload-zone:hover .file-label { background: var(--accent); color: #000; }
+
+    /* ── DASHBOARD ── */
+    #dashboard {
+      position: relative; z-index: 10;
+      max-width: 1320px; margin: 0 auto;
+      padding: 2rem 2.5rem 4rem;
+      display: none;
+    }
+
+    .dash-header {
+      display: flex; align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;
+    }
+    .dash-title {
+      font-family: var(--mono); font-size: 1.1rem;
+      font-weight: 600; letter-spacing: .04em; color: var(--text);
+    }
+    .dash-title span { color: var(--accent); }
+    .dash-subtitle { font-size: .78rem; color: var(--textdim); margin-top: .3rem; }
+
+    .btn-reload {
+      padding: .45rem 1.1rem;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--textdim); font-family: var(--mono);
+      font-size: .72rem; letter-spacing: .05em;
+      border-radius: 2px; cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+    .btn-reload:hover { border-color: var(--accent); color: var(--accent); }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); margin-bottom: 2rem;
+    }
+    .stat-card { background: var(--surface); padding: 1.4rem 1.6rem; transition: background .2s; }
+    .stat-card:hover { background: var(--surface2); }
+    .stat-label {
+      font-family: var(--mono); font-size: .65rem;
+      letter-spacing: .1em; color: var(--muted);
+      text-transform: uppercase; margin-bottom: .6rem;
+    }
+    .stat-value {
+      font-family: var(--mono); font-size: 2rem;
+      font-weight: 600; color: var(--accent); line-height: 1;
+    }
+    .stat-unit { font-size: .7rem; color: var(--textdim); margin-top: .4rem; font-family: var(--mono); }
+
+    .section-label {
+      font-family: var(--mono); font-size: .65rem;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); border-left: 2px solid var(--accent);
+      padding-left: .6rem; margin-bottom: 1rem;
+    }
+
+    .chart-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 2px; padding: 1.5rem; margin-bottom: 2rem;
+    }
+    .chart-panel-header {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 1.25rem;
+    }
+    .chart-panel-title { font-family: var(--mono); font-size: .8rem; font-weight: 600; color: var(--text); }
+    .chart-legend { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .legend-item {
+      display: flex; align-items: center; gap: .4rem;
+      font-family: var(--mono); font-size: .65rem; color: var(--textdim);
+    }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .chart-wrap { position: relative; height: 220px; }
+    canvas { display: block; }
+
+    .table-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 2px; overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: .75rem; }
+    thead tr { background: var(--surface2); }
+    th {
+      padding: .8rem 1.2rem; text-align: left;
+      font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); border-bottom: 1px solid var(--border);
+      font-weight: 500; white-space: nowrap;
+    }
+    th:last-child { text-align: right; }
+    td { padding: .75rem 1.2rem; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+    td:last-child { text-align: right; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background .15s; }
+    tbody tr:hover { background: var(--surface2); }
+
+    .badge { display: inline-block; padding: .2rem .55rem; border-radius: 2px; font-size: .62rem; letter-spacing: .05em; font-weight: 600; }
+    .badge-count { background: rgba(59,142,243,.15); color: var(--accent2); }
+
+    .bar-cell { display: flex; align-items: center; gap: .6rem; }
+    .bar-bg { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width .6s cubic-bezier(.22,1,.36,1); }
+
+    .ts-date { color: var(--textdim); }
+    .ts-time { color: var(--text); }
+
+    #error-msg {
+      position: relative; z-index: 10;
+      max-width: 540px; margin: 2rem auto;
+      background: rgba(224,92,92,.08);
+      border: 1px solid rgba(224,92,92,.3);
+      border-radius: 2px; padding: 1rem 1.5rem;
+      font-family: var(--mono); font-size: .8rem;
+      color: var(--danger); display: none;
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-up { animation: fadeUp .4s ease both; }
+    .fade-up:nth-child(2) { animation-delay: .06s; }
+    .fade-up:nth-child(3) { animation-delay: .12s; }
+    .fade-up:nth-child(4) { animation-delay: .18s; }
+    .fade-up:nth-child(5) { animation-delay: .24s; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">CF</div>
+    <div class="logo-text"><span>CloudFront</span> Metrics</div>
+  </div>
+  <div class="header-meta" id="header-meta">Loading <strong>metrics.json</strong>…</div>
+</header>
+
+<div id="error-msg"></div>
+
+<!-- Loading spinner shown on startup -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>FETCHING METRICS.JSON…</p>
+</div>
+
+<!-- Upload zone — only shown if auto-fetch fails -->
+<div id="upload-zone">
+  <div class="up-icon">📂</div>
+  <div class="fetch-notice">⚠ Could not load metrics.json automatically</div>
+  <h2>DROP METRICS.JSON</h2>
+  <p>Place metrics.json in the same folder as this HTML file,<br>or drag and drop it here manually</p>
+  <div class="file-label">SELECT FILE</div>
+  <input type="file" id="file-input" accept=".json,application/json" />
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard">
+  <div class="dash-header">
+    <div>
+      <div class="dash-title"><span>//</span> REQUEST METRICS OVERVIEW</div>
+      <div class="dash-subtitle" id="time-range">—</div>
+    </div>
+    <button class="btn-reload" id="btn-reload">↺ REFRESH</button>
+  </div>
+  <div class="stat-grid" id="stat-grid"></div>
+  <div id="charts-container"></div>
+  <div class="section-label">ALL DATAPOINTS</div>
+  <div class="table-panel">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Metric Label</th><th>Timestamp</th>
+          <th>Unit</th><th style="width:220px">Value</th><th>Sum</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+Chart.defaults.color = '#5a6070';
+Chart.defaults.borderColor = '#252932';
+Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+Chart.defaults.font.size = 11;
+
+const loading   = document.getElementById('loading');
+const zone      = document.getElementById('upload-zone');
+const fileInput = document.getElementById('file-input');
+const dashboard = document.getElementById('dashboard');
+const errorMsg  = document.getElementById('error-msg');
+const reloadBtn = document.getElementById('btn-reload');
+
+// ─── Auto-fetch metrics.json from same directory ───────────────────────────
+// Requires a real HTTP server (S3, CloudFront, nginx, `npx serve`, etc.)
+// Will NOT work when opening index.html directly as a local file:// URL.
+async function autoLoad() {
+  try {
+    const res = await fetch('./metrics.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const raw = await res.json();
+    render(raw, 'metrics.json');
+  } catch {
+    // Not found or no server — fall back to manual upload
+    loading.style.display = 'none';
+    zone.style.display = 'block';
+    document.getElementById('header-meta').innerHTML =
+      'Drop a <strong>metrics.json</strong> to begin';
+  }
+}
+
+// Refresh button re-fetches the file (useful after regenerating metrics)
+reloadBtn.addEventListener('click', () => {
+  destroyCharts();
+  dashboard.style.display = 'none';
+  loading.style.display = 'block';
+  document.getElementById('header-meta').innerHTML = 'Loading <strong>metrics.json</strong>…';
+  autoLoad();
+});
+
+// ─── Manual upload fallback ────────────────────────────────────────────────
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag-over');
+  handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.style.display = 'block';
+  setTimeout(() => errorMsg.style.display = 'none', 6000);
+}
+
+function handleFile(file) {
+  if (!file) return;
+  if (!file.name.endsWith('.json') && file.type !== 'application/json')
+    return showError('Please upload a JSON file.');
+  const reader = new FileReader();
+  reader.onload = e => {
+    try { render(JSON.parse(e.target.result), file.name); }
+    catch { showError('Invalid JSON — could not parse the file.'); }
+  };
+  reader.readAsText(file);
+}
+
+// ─── Normalise ────────────────────────────────────────────────────────────
+// Handles three shapes:
+//   1. { MetricDataResults: [...] }   — GetMetricData (multi-metric) response
+//   2. [{ Label, Datapoints:[...] }]  — array of GetMetricStatistics results
+//   3.  { Label, Datapoints:[...] }   — single GetMetricStatistics result
+function normalise(raw) {
+  // Format 1: GetMetricData — { MetricDataResults: [ { Id, Label, Timestamps:[], Values:[] } ] }
+  if (raw && Array.isArray(raw.MetricDataResults)) {
+    return raw.MetricDataResults.map(m => {
+      const timestamps = m.Timestamps || [];
+      const values     = m.Values     || [];
+      const datapoints = timestamps
+        .map((t, i) => ({ timestamp: new Date(t), sum: values[i] ?? 0, unit: '' }))
+        .sort((a, b) => a.timestamp - b.timestamp);
+      return { label: m.Label || m.Id || 'Unknown', datapoints };
+    });
+  }
+
+  // Format 2 & 3: GetMetricStatistics — array or single object with Datapoints:[{ Timestamp, Sum, Unit }]
+  const arr = Array.isArray(raw) ? raw : [raw];
+  return arr.map(m => ({
+    label:      m.Label || m.label || 'Unknown',
+    datapoints: (m.Datapoints || m.datapoints || []).map(d => ({
+      timestamp: new Date(d.Timestamp || d.timestamp),
+      sum:       d.Sum ?? d.sum ?? d.Average ?? d.average ?? 0,
+      unit:      d.Unit || d.unit || '',
+    })).sort((a, b) => a.timestamp - b.timestamp),
+  }));
+}
+
+const PALETTES = [
+  { line: '#f0a500', fill: 'rgba(240,165,0,.08)'   },
+  { line: '#3b8ef3', fill: 'rgba(59,142,243,.08)'  },
+  { line: '#3ecf8e', fill: 'rgba(62,207,142,.08)'  },
+  { line: '#e05c5c', fill: 'rgba(224,92,92,.08)'   },
+  { line: '#b07efb', fill: 'rgba(176,126,251,.08)' },
+];
+
+const activeCharts = [];
+function destroyCharts() {
+  activeCharts.forEach(c => c.destroy());
+  activeCharts.length = 0;
+  document.getElementById('charts-container').innerHTML = '';
+  document.getElementById('stat-grid').innerHTML = '';
+  document.getElementById('table-body').innerHTML = '';
+}
+
+function render(raw, filename) {
+  destroyCharts();
+  loading.style.display = 'none';
+  zone.style.display = 'none';
+
+  const metrics  = normalise(raw);
+  const allDPs   = metrics.flatMap(m => m.datapoints);
+  const allTimes = allDPs.map(d => d.timestamp);
+  const minT = allTimes.length ? new Date(Math.min(...allTimes)) : null;
+  const maxT = allTimes.length ? new Date(Math.max(...allTimes)) : null;
+
+  document.getElementById('header-meta').innerHTML =
+    `<strong>${filename}</strong>&nbsp;&nbsp;|&nbsp;&nbsp;` +
+    (minT ? `${fmtDate(minT)} → ${fmtDate(maxT)}` : 'No datapoints');
+  document.getElementById('time-range').textContent =
+    minT ? `Period: ${fmtFull(minT)}  –  ${fmtFull(maxT)}` : '';
+
+  buildKPIs(metrics);
+  buildCharts(metrics);
+  buildTable(metrics);
+  dashboard.style.display = 'block';
+}
+
+function buildKPIs(metrics) {
+  const grid    = document.getElementById('stat-grid');
+  grid.innerHTML = '';
+  const totalSum = metrics.flatMap(m => m.datapoints).reduce((s, d) => s + d.sum, 0);
+  const totalDP  = metrics.flatMap(m => m.datapoints).length;
+  addStat(grid, 'Total Sum',     fmtNum(totalSum),   'across all metrics');
+  addStat(grid, 'Datapoints',    fmtNum(totalDP),    'raw data entries');
+  addStat(grid, 'Metric Groups', metrics.length,     'labels');
+  metrics.forEach(m => {
+    const sums  = m.datapoints.map(d => d.sum);
+    const total = sums.reduce((a, b) => a + b, 0);
+    const peak  = sums.length ? Math.max(...sums) : 0;
+    addStat(grid, m.label, fmtNum(total), `peak ${fmtNum(peak)} ${m.datapoints[0]?.unit || ''}`);
+  });
+}
+
+function addStat(grid, label, value, sub) {
+  const card = document.createElement('div');
+  card.className = 'stat-card fade-up';
+  card.innerHTML = `
+    <div class="stat-label">${label}</div>
+    <div class="stat-value">${value}</div>
+    <div class="stat-unit">${sub}</div>`;
+  grid.appendChild(card);
+}
+
+function buildCharts(metrics) {
+  const container = document.getElementById('charts-container');
+  const unique = [...new Set(metrics.flatMap(m => m.datapoints.map(d => d.timestamp.toISOString())))].sort();
+  if (metrics.length === 1 || unique.length <= 120) {
+    metrics.forEach((m, i) => addChartPanel(container, m.label, [m], [PALETTES[i % PALETTES.length]], i));
+  } else {
+    addChartPanel(container, 'All Metrics', metrics, PALETTES, 0);
+  }
+}
+
+function addChartPanel(container, title, metricSet, palettes, idx) {
+  const panel = document.createElement('div');
+  panel.className = 'chart-panel fade-up';
+  panel.innerHTML = `
+    <div class="chart-panel-header">
+      <div class="chart-panel-title">${title}</div>
+      <div class="chart-legend">${metricSet.map((m,i)=>`
+        <div class="legend-item">
+          <div class="legend-dot" style="background:${palettes[i%palettes.length].line}"></div>${m.label}
+        </div>`).join('')}</div>
+    </div>
+    <div class="chart-wrap"><canvas id="chart-${idx}"></canvas></div>`;
+  container.appendChild(panel);
+
+  const allTs = [...new Set(metricSet.flatMap(m => m.datapoints.map(d => d.timestamp.toISOString())))].sort();
+  const datasets = metricSet.map((m, i) => {
+    const pal = palettes[i % palettes.length];
+    const map = Object.fromEntries(m.datapoints.map(d => [d.timestamp.toISOString(), d.sum]));
+    return {
+      label: m.label, data: allTs.map(t => map[t] ?? null),
+      borderColor: pal.line, backgroundColor: pal.fill,
+      fill: true, tension: 0.35,
+      pointRadius: allTs.length > 60 ? 0 : 4,
+      pointHoverRadius: 5, borderWidth: 2, spanGaps: false,
+    };
+  });
+
+  activeCharts.push(new Chart(
+    document.getElementById(`chart-${idx}`).getContext('2d'), {
+      type: 'line',
+      data: { labels: allTs.map(t => fmtLabel(new Date(t))), datasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#191c24', borderColor: '#252932', borderWidth: 1,
+            titleColor: '#8892a4', bodyColor: '#d4d8e2', padding: 10,
+            callbacks: { title: i => i[0].label, label: i => ` ${i.dataset.label}: ${fmtNum(i.parsed.y)}` }
+          },
+        },
+        scales: {
+          x: { grid: { color: '#1a1d24' }, ticks: { maxTicksLimit: 10, maxRotation: 0 } },
+          y: { grid: { color: '#1a1d24' }, beginAtZero: true, ticks: { callback: v => fmtNum(v) } }
+        }
+      }
+    }
+  ));
+}
+
+function buildTable(metrics) {
+  const tbody  = document.getElementById('table-body');
+  const allDPs = metrics.flatMap(m => m.datapoints.map(d => ({ ...d, label: m.label })))
+                        .sort((a, b) => b.timestamp - a.timestamp);
+  const maxSum = Math.max(...allDPs.map(d => d.sum), 1);
+  allDPs.forEach((d, i) => {
+    const tr  = document.createElement('tr');
+    const pct = ((d.sum / maxSum) * 100).toFixed(1);
+    tr.innerHTML = `
+      <td style="color:var(--muted)">${i+1}</td>
+      <td>${d.label}</td>
+      <td><span class="ts-date">${fmtDate(d.timestamp)}</span>&nbsp;<span class="ts-time">${fmtTime(d.timestamp)}</span></td>
+      <td><span class="badge badge-count">${d.unit||'—'}</span></td>
+      <td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div></div></td>
+      <td><strong>${fmtNum(d.sum)}</strong></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function fmtNum(n) {
+  if (n == null || isNaN(n)) return '—';
+  if (n >= 1e9) return (n/1e9).toFixed(2)+'B';
+  if (n >= 1e6) return (n/1e6).toFixed(2)+'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
+  return Number.isInteger(n) ? n.toString() : n.toFixed(2);
+}
+function fmtDate(d) { return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}); }
+function fmtTime(d) { return d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',timeZoneName:'short'}); }
+function fmtFull(d) { return `${fmtDate(d)} ${fmtTime(d)}`; }
+function fmtLabel(d) {
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+
+         d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+
+autoLoad();
+</script>
+</body>
+</html>
