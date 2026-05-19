@@ -1,0 +1,92 @@
+[
+    {
+    "Id": "allreq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "AllRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "deletereq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "DeleteRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "getreq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "GetRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "listreq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "ListRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "putreq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "PutRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  },
+  {
+    "Id": "headreq",
+    "MetricStat": {
+      "Metric": {
+        "Namespace": "AWS/S3",
+        "MetricName": "HeadRequests",
+        "Dimensions": [
+          { "Name": "BucketName", "Value": "mthree-peregrine-s3-1" },
+          { "Name": "FilterId", "Value": "entireBucket" }
+        ]
+      },
+      "Period": 3600,
+      "Stat": "Sum"
+    }
+  }
+]
