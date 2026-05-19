@@ -41,7 +41,7 @@ jobs:
       ### Upload to S3 ###
       - name: upload src to S3
         run: |
-          aws s3 sync src/ s3://${{ secrets.S3_BUCKET }}/ --delete
+          aws s3 sync src/ s3://${{ secrets.S3_BUCKET }}/newSites/theon --delete
 
       #### Push Docker Image to ECR ####
       - name: Login to ECR
@@ -89,17 +89,17 @@ jobs:
           fi
 
       ### Deploy to EC2 ###
-      - name: deploy on EC2 (pull from S3, reload NGINX)
-        if: steps.preflight.outputs.ready == 'true'
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            set -e 
-            sudo mkdir -p /var/www/animal_quiz
-            sudo chown -R $USER:$USER /var/www/animal_quiz
+      # - name: deploy on EC2 (pull from S3, reload NGINX)
+      #   if: steps.preflight.outputs.ready == 'true'
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.EC2_HOST }}
+      #     username: ${{ secrets.EC2_USER }}
+      #     key: ${{ secrets.EC2_SSH_KEY }}
+      #     script: |
+      #       set -e
+      #       sudo mkdir -p /var/www/animal_quiz
+      #       sudo chown -R $USER:$USER /var/www/animal_quiz
 
-            aws s3 sync s3://${{ secrets.S3_BUCKET }}/ /var/www/animal_quiz/ --delete 
-            sudo systemctl reload nginx
+      #       aws s3 sync s3://${{ secrets.S3_BUCKET }}/ /var/www/animal_quiz/ --delete
+      #       sudo systemctl reload nginx

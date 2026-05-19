@@ -1,0 +1,4 @@
+{
+    "After": [int][double]((Get-Date).AddMinutes(-15).ToUniversalTime().Subtract([datetime]'1970-01-01').TotalMilliseconds),
+    "Before": [int][double]((Get-Date).ToUniversalTime().Subtract([datetime]'1970-01-01').TotalMilliseconds)
+}

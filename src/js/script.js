@@ -97,6 +97,7 @@ function renderResults(data) {
 
     const p1 = document.createElement('p');
     p1.textContent = answers[index];
+    p1.id = 'UA' + index;
 
     resultsPage.appendChild(p1);
 
@@ -107,6 +108,7 @@ function renderResults(data) {
 
     const p2 = document.createElement('p');
     p2.textContent = q.correct;
+    p2.id = 'CA' + index;
 
     resultsPage.appendChild(p2);
   });
@@ -134,6 +136,7 @@ const quiz = document.getElementById('quiz');
 if (quiz) {
   document.addEventListener('DOMContentLoaded', () => {
     const quizData = JSON.parse(localStorage.getItem('quizData'));
+    if (!quizData) return;
     renderQuiz(quizData);
   });
 
@@ -187,7 +190,7 @@ if (quiz) {
 // Results page
 const result = document.getElementsByClassName('results');
 
-if (result) {
+if (result.length > 0) {
   const data = JSON.parse(localStorage.getItem('quizData'));
   const score = Number(localStorage.getItem('score'));
 

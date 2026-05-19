@@ -1,0 +1,16 @@
+{
+  "MetricQueries": [
+    {
+      "Id": "errors",
+      "MetricName": "JsErrorCount",
+      "Namespace": "AWS/RUM",
+      "Stat": "Sum"
+    },
+    {
+      "Id": "pageViews",
+      "MetricName": "PageViewCount",
+      "Namespace": "AWS/RUM",
+      "Stat": "Sum"
+    }
+  ]
+}
